@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign In</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fdfdfd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .auth-container {
+      width: 300px;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #333;
+      color: white;
+      cursor: pointer;
+    }
+    .switch {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .switch span {
+      color: blue;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h2 id="form-title">Sign In</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="handleAuth()">Sign In</button>
+    <div class="switch">
+      <span onclick="toggleMode()">Don't have an account? Sign Up</span>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      setPersistence,
+      browserLocalPersistence
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_JTidCckvhDdHJAf_4VWM-Ri_dDvMGw8",
+      authDomain: "senpaisays-5f667.firebaseapp.com",
+      projectId: "senpaisays-5f667",
+      storageBucket: "senpaisays-5f667.firebasestorage.app",
+      messagingSenderId: "943325257183",
+      appId: "1:943325257183:web:d4b4dc6cc0f078b811f86a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Ensure user stays signed in after reload
+    setPersistence(auth, browserLocalPersistence).catch(error => {
+      console.error("Persistence error:", error.message);
+    });
+
+    let mode = "signin";
+
+    window.toggleMode = function () {
+      mode = mode === "signin" ? "signup" : "signin";
+      document.getElementById("form-title").innerText = mode === "signin" ? "Sign In" : "Sign Up";
+      document.querySelector("button").innerText = mode === "signin" ? "Sign In" : "Sign Up";
+      document.querySelector(".switch span").innerText = mode === "signin"
+        ? "Don't have an account? Sign Up"
+        : "Already have an account? Sign In";
+    };
+
+    window.handleAuth = function () {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      if (mode === "signin") {
+        signInWithEmailAndPassword(auth, email, password)
+          .then(() => {
+            alert("Signed in!");
+            window.location.href = "index.html";
+          })
+          .catch(error => {
+            alert(error.message);
+          });
+      } else {
+        createUserWithEmailAndPassword(auth, email, password)
+          .then(() => {
+            alert("Account created!");
+            window.location.href = "index.html";
+          })
+          .catch(error => {
+            alert(error.message);
+          });
+      }
+    };
+  </script>
+</body>
+</html>

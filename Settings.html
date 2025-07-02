@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Settings</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      padding: 20px;
+    }
+    .settings-container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #555;
+    }
+    .danger {
+      background-color: #e74c3c;
+    }
+    .danger:hover {
+      background-color: #c0392b;
+    }
+    p {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-container">
+    <h2>User Settings</h2>
+
+    <!-- Language Selection --><!-- Only body and script updated for brevity -->
+<!-- Add this inside .settings-container before display name -->
+<label for="language">Language</label>
+<select id="language">
+  <option value="en">English</option>
+  <option value="mizo">Mizo</option>
+  <option value="jp">Japanese</option>
+</select>
+<button onclick="saveLanguage()">Save Language</button>
+
+    <!-- Update Password -->
+    <label for="new-password">New Password</label>
+    <input type="password" id="new-password" placeholder="Enter new password" />
+    <button onclick="updatePassword()">Update Password</button>
+
+    <!-- Update Display Name -->
+    <label for="display-name">Display Name</label>
+    <input type="text" id="display-name" placeholder="Enter display name" />
+    <button onclick="updateDisplayName()">Save Name</button>
+
+    <!-- Notification Toggle -->
+    <label for="notifications-toggle">Notifications</label>
+    <select id="notifications-toggle">
+      <option value="on">On</option>
+      <option value="off">Off</option>
+    </select>
+    <button onclick="saveNotifications()">Save Notifications</button>
+
+    <!-- Display Name Update Date -->
+    <p><strong>Last Display Name Update:</strong> <span id="display-name-updated">Not yet</span></p>
+
+    <!-- Delete Account -->
+    <button class="danger" onclick="deleteAccount()">Delete Account</button>
+    <hr style="margin: 30px 0;">
+
+<h2>Report & Feedback</h2>
+
+<label for="report-category">Report Category</label>
+<select id="report-category">
+  <option value="movie-request">Movie Request</option>
+  <option value="performance">Performance Issue</option>
+  <option value="login-issue">Login/Signup Problem</option>
+  <option value="chat-error"> System Error</option>
+  <option value="other">Other (General Feedback)</option>
+</select>
+
+<label for="report-message">Your Message</label>
+<textarea id="report-message" placeholder="type here" rows="5" style="width:100%;padding:10px;border-radius:6px;border:1px solid #ccc;margin-top:5px;"></textarea>
+
+<button onclick="submitFeedback()">Submit Report</button>
+  </div>
+
+<h2>Privacy & Policy</h2>
+<p>Your privacy is important to us. Read our full policy for details on how your data is handled.</p>
+<a href="privacy.html" style="
+  display: block;
+  text-align: center;
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  margin-top: 20px;
+">
+  More Info
+</a>
+<a href="more.html" style="
+  display: block;
+  text-align: center;
+  background-color: #555;
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  margin-top: 10px;
+">
+  View Terms and Conditions
+</a>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import {
+      getAuth,
+      updatePassword as fbUpdatePassword,
+      deleteUser,
+      onAuthStateChanged,
+      updateProfile,
+      EmailAuthProvider,
+      reauthenticateWithCredential
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+      get
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_JTidCckvhDdHJAf_4VWM-Ri_dDvMGw8",
+      authDomain: "senpaisays-5f667.firebaseapp.com",
+      databaseURL: "https://senpaisays-5f667-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "senpaisays-5f667",
+      storageBucket: "senpaisays-5f667.appspot.com",
+      messagingSenderId: "943325257183",
+      appId: "1:943325257183:web:d4b4dc6cc0f078b811f86a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let currentUser = null;
+
+    // Add log inside onAuthStateChanged
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    console.log("User UID:", user.uid);
+    currentUser = user;
+    const userSettingsRef = ref(db, `settings/${user.uid}`);
+    try {
+      const snapshot = await get(userSettingsRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        console.log("Loaded settings:", data);
+        if (data.language) document.getElementById("language").value = data.language;
+        if (data.notifications) document.getElementById("notifications-toggle").value = data.notifications;
+        if (data.displayName) document.getElementById("display-name").value = data.displayName;
+        if (data.displayNameUpdateDate) document.getElementById("display-name-updated").textContent = data.displayNameUpdateDate;
+      }
+    } catch (err) {
+      console.error("Error loading settings:", err.message);
+    }
+  } else {
+    alert("You need to be signed in to view settings.");
+    window.location.href = "signin.html";
+  }
+});
+
+    window.saveLanguage = async function () {
+      const lang = document.getElementById("language").value;
+      if (currentUser) {
+        await set(ref(db, `settings/${currentUser.uid}/language`), lang);
+        alert("Language saved.");
+      }
+    };
+
+    window.updatePassword = async function () {
+      const newPass = document.getElementById("new-password").value;
+      if (!newPass) return alert("Enter a new password");
+
+      const email = currentUser.email;
+      const oldPassword = prompt("Enter your current password:");
+
+      if (!oldPassword) return alert("Password update cancelled.");
+
+      const credential = EmailAuthProvider.credential(email, oldPassword);
+
+      try {
+        await reauthenticateWithCredential(currentUser, credential);
+        await fbUpdatePassword(currentUser, newPass);
+        alert("Password updated!");
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    };
+
+    window.updateDisplayName = async function () {
+      const name = document.getElementById("display-name").value;
+      if (!name) return alert("Enter a display name");
+
+      try {
+        await updateProfile(currentUser, { displayName: name });
+
+        const today = new Date();
+        const formattedDate = `${today.getDate()} / ${today.getMonth() + 1} / ${today.getFullYear()}`;
+
+        await set(ref(db, `settings/${currentUser.uid}/displayName`), name);
+        await set(ref(db, `settings/${currentUser.uid}/displayNameUpdateDate`), formattedDate);
+
+        document.getElementById("display-name-updated").textContent = formattedDate;
+
+        alert("Display name updated!");
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    };
+
+    window.saveNotifications = async function () {
+      const choice = document.getElementById("notifications-toggle").value;
+      if (currentUser) {
+        await set(ref(db, `settings/${currentUser.uid}/notifications`), choice);
+        alert("Notifications setting saved.");
+      }
+    };
+
+    window.deleteAccount = async function () {
+      if (!confirm("Are you sure you want to delete your account? This cannot be undone!")) return;
+
+      const password = prompt("Please enter your password to confirm:");
+
+      if (!password) return alert("Account deletion cancelled.");
+
+      const email = currentUser.email;
+      const credential = EmailAuthProvider.credential(email, password);
+
+      try {
+        await reauthenticateWithCredential(currentUser, credential);
+        await deleteUser(currentUser);
+        alert("Account deleted.");
+        window.location.href = "signin.html";
+      } catch (err) {
+        alert("Error deleting account: " + err.message);
+      }
+    };
+    window.submitFeedback = async function () {
+  const category = document.getElementById("report-category").value;
+  const message = document.getElementById("report-message").value.trim();
+
+  if (!message) return alert("Please enter a message.");
+
+  const timestamp = new Date().toISOString();
+
+  try {
+    await set(ref(db, `feedback/${currentUser.uid}/${Date.now()}`), {
+      category,
+      message,
+      timestamp,
+      email: currentUser.email || "anonymous"
+    });
+
+    alert("Feedback submitted!");
+    document.getElementById("report-message").value = "";
+  } catch (err) {
+    alert("Failed to send feedback: " + err.message);
+  }
+};
+  </script>
+</body>
+</html>

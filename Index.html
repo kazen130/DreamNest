@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DreamNest</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 15px;
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 32px;
+  font-weight: bold;
+  background: linear-gradient(90deg, red, orange, yellow, lime, cyan, blue, violet);
+  background-size: 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbowShift 5s linear infinite;
+}
+@keyframes rainbowShift {
+  0% { background-position: 0%; }
+  100% { background-position: 400%; }
+}
+
+    #searchBar {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .movie-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .movie-card {
+      background: #222;
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 0 10px #000;
+      transition: transform 0.2s ease;
+    }
+
+    .movie-card:hover {
+      transform: scale(1.03);
+    }
+
+    .movie-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .movie-title {
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 500px) {
+      .movie-grid {
+        grid-template-columns: repeat(3, 1fr); /* Force 3 per row */
+      }
+
+      .movie-card img {
+        height: 150px;
+      }
+    }
+    .movie-title {
+  padding: 8px;
+  font-size: 14px;
+  min-height: 60px; /* Set a minimum height */
+}
+.menu-button {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 1000;
+    }
+
+    .menu-button span {
+      display: block;
+      height: 4px;
+      background-color: #333;
+      border-radius: 2px;
+    }
+    .menu-button.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.menu-button.active span:nth-child(2) {
+  opacity: 0;
+}
+.menu-button.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+.menu-button span {
+  transition: all 0.3s ease;
+}
+
+    .menu {
+  position: fixed;
+  top: 60px;
+  left: 20px;
+  background-color: #222; /* Fixed background color */
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5); /* Stronger shadow */
+  display: none;
+  z-index: 999;
+}
+
+.menu a {
+  display: block;
+  margin: 10px 0;
+  text-decoration: none;
+  color: white; /* ✅ Much more visible */
+  font-weight: bold;
+  cursor: pointer;
+}
+.menu a:hover {
+  color: #ffd700; /* gold hover */
+}
+ .content {
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .menu.show {
+      display: block;
+    }
+    .sign-icon {
+      position: fixed;
+      top: 0px;
+      right: 20px;
+      width: auto;
+      height: 36px;
+      background-color: #black;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      text-decoration: none;
+      color: white;
+      z-index: 1000;
+    }
+
+    .circle-user {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: white;
+      position: relative;
+      margin-right: 8px;
+    }
+
+    .circle-user::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 10px;
+      background-color: white;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .sign-label {
+      font-size: 14px;
+      color: white;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu-button" onclick="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div class="menu" id="menu">
+  
+    <a onclick="showSection('home')">Home</a>
+    <a href="settings.html">Settings</a>
+        <a href="About.html">About</a>
+  <a href="signin.html" id="sign-link">Sign In</a>
+</div>
+  </div>  
+  <h1>Mizo Version Animations</h1>
+  
+
+  <div class="movie-grid" id="movieGrid">
+    <div class="movie-card" data-link="Movie1.html">
+      <img src="m1.jpg" alt="Movie 1">
+      <div class="movie-title">Tom And Jerry And The Wizard Of Oz</div>
+    </div>
+    <div class="movie-card" data-link="Movie2.html">
+      <img src="m2.jpg" alt="Movie 2">
+      <div class="movie-title">Astro Boy</div>
+    </div>
+    <div class="movie-card" data-link="Movie3.html">
+      <img src="m3.jpg" alt="Movie 3">
+      <div class="movie-title">My Neighbor Totoro</div>
+    </div>
+    <div class="movie-card" data-link="Movie4.html">
+      <img src="m4.jpg" alt="Movie 4">
+      <div class="movie-title">Hatarubi No Mori E</div>
+    </div>
+    <div class="movie-card" data-link="Movie5.html">
+      <img src="m5.jpg" alt="Movie 4">
+      <div class="movie-title">mary and the witch's flower</div>
+    </div>
+     <div class="movie-card" data-link="Movie6.html">
+      <img src="m6.jpg" alt="Movie 4">
+      <div class="movie-title">Ponyo</div>
+    </div>
+     <div class="movie-card" data-link="Movie7.html">
+      <img src="m7.jpg" alt="Movie 4">
+      <div class="movie-title">The Secret World Of Arrietty</div>
+    </div>
+         <div class="movie-card" data-link="Movie8.html">
+      <img src="m8.jpg" alt="Movie 4">
+      <div class="movie-title">The Tale Of  The Princess Kaguya</div>
+    </div>
+    <div class="movie-card" data-link="Movie9.html">
+      <img src="m9.jpg" alt="Movie 4">
+      <div class="movie-title">Howls Moving Castle</div>
+    </div>
+    <!-- Add more movies here -->
+  </div>
+
+  
+  
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_JTidCckvhDdHJAf_4VWM-Ri_dDvMGw8",
+      authDomain: "senpaisays-5f667.firebaseapp.com",
+      projectId: "senpaisays-5f667",
+      storageBucket: "senpaisays-5f667.firebasestorage.app",
+      messagingSenderId: "943325257183",
+      appId: "1:943325257183:web:d4b4dc6cc0f078b811f86a"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const signLink = document.getElementById('sign-link');
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    signLink.textContent = "Sign Out";
+    signLink.href = "#";
+    signLink.onclick = (e) => {
+      e.preventDefault();
+      if (confirm("Do you want to sign out?")) {
+        signOut(auth).then(() => {
+          alert("Signed out!");
+          window.location.reload();
+        });
+      }
+    };
+  } else {
+    signLink.textContent = "Sign In";
+    signLink.href = "signin.html";
+    signLink.onclick = null;
+  }
+});
+
+    onAuthStateChanged(auth, user => {
+      const label = document.querySelector('.sign-label');
+
+      if (user) {
+        label.textContent = "Sign Out";
+        signBtn.title = "Sign Out";
+        signBtn.href = "#";
+        signBtn.onclick = (e) => {
+          e.preventDefault();
+          if (confirm("Do you want to sign out?")) {
+            signOut(auth).then(() => {
+              alert("Signed out!");
+              window.location.reload();
+            });
+          }
+        };
+      } else {
+        label.textContent = "Sign In";
+        signBtn.title = "Sign In";
+        signBtn.href = "signin.html";
+        signBtn.onclick = null;
+      }
+    });
+  </script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      databaseURL: "https://senpaisays-5f667-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function saveToFirebase(reset = false) {
+      db.ref("users/defaultUser").set({
+        points: points,
+        completedLevels: reset ? [] : completedLevels,
+        firstRun: firstTime
+      });
+    }
+
+    function loadFromFirebase() {
+      db.ref("users/defaultUser").once("value").then((snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          points = data.points || 0;
+          completedLevels = data.completedLevels || [];
+          firstTime = data.firstRun !== false;
+          updatePointsDisplay();
+        }
+      });
+    }
+
+    loadFromFirebase();
+  </script>
+  <script>
+const menu = document.getElementById('menu');
+  const button = document.querySelector('.menu-button');
+
+  function toggleMenu() {
+    menu.classList.toggle('show');
+    button.classList.toggle('active');
+
+    if (menu.classList.contains('show')) {
+      document.addEventListener('click', outsideClickListener);
+    } else {
+      document.removeEventListener('click', outsideClickListener);
+    }
+  }
+
+  function outsideClickListener(event) {
+    if (!menu.contains(event.target) && !button.contains(event.target)) {
+      menu.classList.remove('show');
+      button.classList.remove('active'); // This removes the X
+      document.removeEventListener('click', outsideClickListener);
+    }
+  }
+    </script>
+    <script>
+  window.onload = function() {
+    // On page load, make sure menu is closed and button is normal
+    document.getElementById('menu').classList.remove('show');
+    document.querySelector('.menu-button').classList.remove('active');
+  };
+</script>
+<script type="module">
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+  const auth = getAuth();
+
+  let currentUser = null;
+
+  onAuthStateChanged(auth, user => {
+    currentUser = user;
+  });
+
+  document.querySelectorAll('.movie-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      const link = card.getAttribute('data-link');
+      if (currentUser) {
+        window.location.href = link;
+      } else {
+        alert("Please sign in first to watch this video.");
+      }
+    });
+  });
+</script>
+</body>
+</html>

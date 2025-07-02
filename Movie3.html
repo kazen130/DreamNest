@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Movie 1 – My Movie Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000;
+      margin-bottom: 20px;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .description {
+      font-size: 15px;
+      color: #ccc;
+      margin-bottom: 25px;
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #333;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .back-button:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>My Neighbor Totoro</h1>
+
+  <div class="video-container">
+    <iframe src="https://player.vimeo.com/video/1097032046" 
+  width="100%" height="100%" frameborder="0" 
+  allow="autoplay; fullscreen; picture-in-picture" 
+  allowfullscreen></iframe>
+  </div>
+
+  <div class="description">
+    My Neighbor Totoro
+Two sisters move to the countryside and discover magical creatures, including the gentle forest spirit Totoro. A heartwarming tale of wonder, family, and nature. <br>
+    Grab some popcorn and enjoy!
+  </div>
+
+  <a class="back-button" href="index.html">⬅ Back to Home</a>
+
+</body>
+</html>
